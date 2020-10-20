@@ -42,5 +42,6 @@ def get_submissions_and_data():
                     the_data = odkapi.submissions.get_data(one_form['form_id'], one_form['group_name'], one_id, verbose=False)
                     my_file.append_to_file(json.dumps(xmltodict.parse((the_data.text)), indent=4))
                     
+                    
 if __name__ == '__main__':
     get_submissions_and_data()

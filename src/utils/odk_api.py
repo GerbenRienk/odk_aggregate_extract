@@ -11,13 +11,6 @@ class OdkApi(object):
         self.utils = _Utils(self)
         self.submissions = _Submissions(self)
         
-        '''
-        self.jobs = _Jobs(self)
-        self.events = _Events(self)
-        self.clinical_data = _ClinicalData(self)
-        self.odm_parser = _ODMParser
-        '''
-        
 class _Utils(object):
 
     def __init__(self, odk_api):
