@@ -19,7 +19,7 @@ class DictFile(object):
             rel_path = '../config'
         self.rel_path = rel_path
         
-    def read(self):
+    def read(self, verbose=False):
         """
         Rel_path is the relative path to folder config;
         by default it is assumed that folder config is a sibling of the current folder,
@@ -40,5 +40,6 @@ class DictFile(object):
                 f.close()
         except:
             print('could not open file %s in %s/' % (self.dict_file_name, self.rel_path))
-            
+        if verbose == True:
+            print('read resulted in %s' % myDict)   
         return myDict    
