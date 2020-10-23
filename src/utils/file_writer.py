@@ -7,20 +7,19 @@ import os
 
 class FileWriter(object):
     '''
-    Reporter object that creates a file
-    to which lines can be added reporting the activities of oodkoc4,
-    so it can be sent at the end of the day
+    Class that creates a file to which the odk-data can be written,
+    in one single action
     '''
 
     def __init__(self, file_name='../logs/report.txt'):
         '''
-        Constructor
+        provide the file-name
         '''
         self.file_name=file_name
         if os.path.exists(file_name):
-            mode = 'a'
-        else:
-            mode = 'w'
+            os.remove(file_name)
+        
+        mode = 'w'
         self._file = open(file_name, mode) 
         self._file.close()
         
@@ -30,7 +29,7 @@ class FileWriter(object):
         
         with open(self.file_name, 'a') as f:
             f.write(text_to_add)
-                
+        self._file.close()        
         return None
     
     def close_file(self):

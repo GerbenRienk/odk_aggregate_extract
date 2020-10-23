@@ -1,4 +1,4 @@
 {"forms": [
-{"form_id": "abc", "group_name": "def"},
-{"form_id": "ghi", "group_name": "jkl"}
+{"form_id": "abc", "group_name": "def", "indent": 0},
+{"form_id": "ghi", "group_name": "jkl", "indent": 4}
 ]}
