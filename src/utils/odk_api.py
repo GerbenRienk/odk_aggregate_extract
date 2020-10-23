@@ -10,6 +10,7 @@ class OdkApi(object):
 
         self.utils = _Utils(self)
         self.submissions = _Submissions(self)
+        self.forms = _Forms(self)
         
 class _Utils(object):
 
@@ -18,7 +19,7 @@ class _Utils(object):
 
     def request(self, data=None, request_type=None, url=None, headers=None, params=None, files=None, verbose=False):
         """
-        Return the result of an api call, or None.
+        Return the result of an api request, or None.
         """
         auth = requests.auth.HTTPDigestAuth(self.api.user, self.api.password)
         if url is None:
@@ -72,7 +73,7 @@ class _Submissions(object):
         """
         list submissions per form-id
         """
-        url = self.api.url + "/view/submissionList?formId=%s" % form_id
+        url = "%s/view/submissionList?formId=%s" % (self.api.url, form_id)
         response = self.api.utils.request(url=url, request_type='get', verbose=verbose)
         
         return response
@@ -80,16 +81,34 @@ class _Submissions(object):
     def get_data(self, form_id, group_name, uuid, verbose=False):
         """
         retrieve data of a particular submission per form-id
-        reply = requests.get((base_format % {'form_id': form_id,
-                                                 'api': 'downloadSubmission',
-                                                 'host': host} +
-                                  submission_format % {'group_name': 'CRF99-ImageTest',
-                                                       'uuid': uuid}), auth=auth)
-        base_format = 'https://%(host)s/view/%(api)s?formId=%(form_id)s'
-        submission_format = '[@version=null and @uiVersion=null]/%(group_name)s[@key=%(uuid)s]'
         """
-        url = self.api.url + "/view/downloadSubmission?formId=%s[@version=null and @uiVersion=null]/%s[@key=%s]" % (form_id, group_name, uuid)
+        url = "%s/view/downloadSubmission?formId=%s[@version=null and @uiVersion=null]/%s[@key=%s]" % (self.api.url, form_id, group_name, uuid)
         response = self.api.utils.request(url=url, request_type='get', verbose=verbose)
         
         return response
 
+class _Forms(object):
+    """all form-ids that are present on the odk-aggregate server
+    this oject has one method: list
+    """
+    def __init__(self, odk_api):
+        self.api = odk_api
+        
+    def list(self, verbose=False):
+        """
+        list all form-ids
+        """
+        url = "%s/formList" % self.api.url
+        response = self.api.utils.request(url=url, request_type='get', verbose=verbose)
+        
+        return response
+
+    def xml(self, form_id, verbose=False):
+        """
+        view the xml of a form
+        """
+        url = "%s/formXml?formId=%s" % (self.api.url, form_id)
+        response = self.api.utils.request(url=url, request_type='get', verbose=verbose)
+        
+        return response
+    
