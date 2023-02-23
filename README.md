@@ -4,3 +4,6 @@ This repository will be used to create a script that will extract data from an o
 For this we will send requests to the api using two end-points: /view/submissionList and /view/downloadSubmission
 
 I built further on the answers that were kindly provided on https://forum.getodk.org/t/authentication-to-odk-via-python/2224/6 
+
+We will use xmltodict, so in eclipse: Window -> Preferences and in the pop-up window, navigate to PyDev -> Interpreters -> Python Interpreter
+Click button manage-with-pip and enter xmltodict
