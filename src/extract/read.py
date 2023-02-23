@@ -10,6 +10,7 @@ from utils.file_writer import FileWriter
 import xmltodict
 import json
 import datetime
+import xml.etree.ElementTree as ET
 
 def get_submissions_and_data():
     # read the configuration in a dict
@@ -22,13 +23,18 @@ def get_submissions_and_data():
             
     # loop through the forms and collect the submissions for each          
     for one_form in all_forms['forms']:
-        # construct the file-name
+        # construct the file-names
         date_stamp = datetime.datetime.now().strftime("%Y%m%d")
-        data_file_name = '../output_files/%s_%s.json' % (one_form['form_id'], date_stamp)
-        # initiate the data-file
-        data_file = FileWriter(data_file_name)
+        data_file_name_json = '../output_files/%s_%s.json' % (one_form['form_id'], date_stamp)
+        data_file_name_xml = '../output_files/%s_%s.xml' % (one_form['form_id'], date_stamp)
+        # initiate the data-files
+        data_file_json = FileWriter(data_file_name_json)
         # initiate all submission-data
         all_submission_data = []
+        
+        # and create an element tree for xml-output
+        root = ET.Element('submissions')
+        submissions_tree = ET.ElementTree(root)
         
         # request the submission-ids
         complete_response = odkapi.submissions.list(one_form['form_id'], verbose=False)
@@ -46,6 +52,10 @@ def get_submissions_and_data():
                         data_dict = xmltodict.parse((data_response.text))
                         data_dict_subset = data_dict['submission']['data']
                         all_submission_data.append(data_dict_subset)
+                        
+                        # now make the text an xml-element
+                        one_submission = ET.fromstring(data_response.text)
+                        root.append(one_submission)
                 else:
                     # we have only one submission in this form
                     one_id = submissions_dict['idChunk']['idList']['id']
@@ -53,13 +63,21 @@ def get_submissions_and_data():
                     data_dict = xmltodict.parse((data_response.text))
                     data_dict_subset = data_dict['submission']['data']
                     all_submission_data.append(data_dict_subset)
-                
-                # now write the collected data to the file
-                if one_form['indent'] == 0:
-                    data_file.append_to_file(json.dumps(all_submission_data))
-                else:
-                    data_file.append_to_file(json.dumps(all_submission_data, indent=one_form['indent']))
                     
+                    # now make the text an xml-element
+                    one_submission = ET.fromstring(data_response.text)
+                    root.append(one_submission)
+
+                
+                # now write the collected data to the json file
+                if one_form['indent'] == 0:
+                    data_file_json.append_to_file(json.dumps(all_submission_data))
+                else:
+                    data_file_json.append_to_file(json.dumps(all_submission_data, indent=one_form['indent']))
+                
+                # and write the xml file
+                with open(data_file_name_xml, 'wb') as f:
+                    submissions_tree.write(f, encoding='utf-8')
                     
 if __name__ == '__main__':
     get_submissions_and_data()
